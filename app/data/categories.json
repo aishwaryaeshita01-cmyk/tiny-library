@@ -1,0 +1,27 @@
+[
+  {
+    "id": "1",
+    "slug": "fiction",
+    "label": "Fiction"
+  },
+  {
+    "id": "2",
+    "slug": "non-fiction",
+    "label": "Non-Fiction"
+  },
+  {
+    "id": "3",
+    "slug": "fantasy",
+    "label": "Fantasy"
+  },
+  {
+    "id": "4",
+    "slug": "self-help",
+    "label": "Self-Help"
+  },
+  {
+    "id": "5",
+    "slug": "thriller",
+    "label": "Thriller"
+  }
+]

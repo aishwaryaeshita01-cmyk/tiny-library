@@ -1,103 +1,86 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getAllBooks, getAllCategories } from "./lib/books";
+import BooksGrid from "./components/BooksGrid";
+import Pill from "./components/Pill";
 
-export default function Home() {
+export default async function HomePage() {
+  const allBooks = await getAllBooks();
+  const categories = await getAllCategories();
+
+  // Get top 5 most liked books as featured
+  const featuredBooks = [...allBooks]
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, 5);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="flex flex-col gap-12 py-4">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-amber-100/80 via-amber-50 to-stone-100 border border-amber-200/80 p-8 md:p-12 rounded-3xl text-center flex flex-col items-center gap-4 shadow-sm">
+        <Pill className="bg-amber-200/80 text-amber-900 border-amber-300">
+          Hand-Curated Collection
+        </Pill>
+        <h1 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 tracking-tight max-w-2xl">
+          Welcome to Tiny Library
+        </h1>
+        <p className="text-stone-700 text-base md:text-lg max-w-xl leading-relaxed">
+          Explore our collection of 52 hand-picked books across fiction, non-fiction, fantasy, and self-help.
+        </p>
+        <div className="flex items-center gap-3 mt-2">
+          <Link
+            href="/books"
+            className="px-6 py-3 bg-stone-900 text-white font-medium rounded-xl hover:bg-stone-800 transition-all shadow-md hover:shadow-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Browse All Books →
+          </Link>
+          <Link
+            href="/about"
+            className="px-6 py-3 bg-white text-stone-700 border border-stone-300 font-medium rounded-xl hover:bg-stone-50 transition-colors"
           >
-            Read our docs
-          </a>
+            About Us
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Featured / Popular Books */}
+      <section className="flex flex-col gap-6">
+        <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+          <h2 className="text-2xl font-serif font-bold text-stone-900">
+            Most Popular Picks
+          </h2>
+          <Link
+            href="/books"
+            className="text-sm font-semibold text-amber-900 hover:underline"
+          >
+            View full catalogue →
+          </Link>
+        </div>
+        <BooksGrid books={featuredBooks} />
+      </section>
+
+      {/* Categories Grid */}
+      <section className="flex flex-col gap-6">
+        <div className="border-b border-stone-200 pb-3">
+          <h2 className="text-2xl font-serif font-bold text-stone-900">
+            Explore Categories
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/books/category/${cat.slug}`}
+              className="p-4 bg-white border border-stone-200 rounded-xl hover:border-amber-300 hover:shadow-md transition-all group flex flex-col justify-between"
+            >
+              <span className="font-serif font-semibold text-stone-800 group-hover:text-amber-900 transition-colors">
+                {cat.label}
+              </span>
+              <span className="text-xs text-stone-500 mt-2">
+                Browse collection →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
