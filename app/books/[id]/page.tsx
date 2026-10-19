@@ -30,6 +30,9 @@ export default async function BookDetailPage({ params }: PageProps) {
       );
     }
 
+    // Safely retrieve description if present on the book object
+    const bookDescription = (book as { description?: string }).description;
+
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link
@@ -65,7 +68,7 @@ export default async function BookDetailPage({ params }: PageProps) {
               
               <div className="border-t border-stone-100 pt-6">
                 <h3 className="text-sm font-semibold text-stone-900 uppercase tracking-wider mb-2">About this book</h3>
-                <p className="text-stone-600 text-sm leading-relaxed">{book.description || "No description provided."}</p>
+                <p className="text-stone-600 text-sm leading-relaxed">{bookDescription || "No description provided."}</p>
               </div>
             </div>
 
@@ -81,7 +84,7 @@ export default async function BookDetailPage({ params }: PageProps) {
         </div>
       </div>
     );
-  } catch (_error) {
+  } catch {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-serif font-bold text-stone-900 mb-4">Something went wrong</h1>
