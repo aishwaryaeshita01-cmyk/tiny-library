@@ -42,7 +42,7 @@ export async function getAllCategories(): Promise<Category[]> {
  * Retrieves a single category object by its slug identifier.
  */
 export async function getCategoryBySlug(slug: BookCategorySlug): Promise<Category | undefined> {
-  return (categoriesData as Category[]).find((cat) => cat.slug === slug);
+  return (categoriesData as unknown as Category[]).find((cat) => cat.slug === slug);
 }
 
 export async function searchBooks(query: string): Promise<Book[]> {
