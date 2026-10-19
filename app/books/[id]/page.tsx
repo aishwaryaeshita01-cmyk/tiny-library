@@ -30,7 +30,6 @@ export default async function BookDetailPage({ params }: PageProps) {
       );
     }
 
-    // Safely retrieve description if present on the book object
     const bookDescription = (book as { description?: string }).description;
 
     return (
