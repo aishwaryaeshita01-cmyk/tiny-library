@@ -35,7 +35,7 @@ export async function getBooksByCategory(categorySlug: BookCategorySlug): Promis
  * Retrieves all available book categories.
  */
 export async function getAllCategories(): Promise<Category[]> {
-  return categoriesData as Category[];
+  return categoriesData as unknown as Category[];
 }
 
 /**
