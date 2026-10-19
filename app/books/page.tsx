@@ -1,7 +1,8 @@
 import Link from "next/link";
 import BookCard from "@/app/components/BookCard";
 import SearchBar from "@/app/components/SearchBar";
-import { getAllBooks } from "../lib/books";
+import { getAllBooks } from "@/app/lib/books";
+import { Book } from "@/app/types/tinylibrary";
 
 interface BooksPageProps {
   searchParams: Promise<{
@@ -13,15 +14,14 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
   const resolvedParams = await searchParams;
   const query = (resolvedParams.q || "").toLowerCase().trim();
 
-  const allBooks = (await getAllBooks()) || [];
+  const allBooks: Book[] = (await getAllBooks()) || [];
 
-  // Filter books if a search query is present
-  const filteredBooks = allBooks.filter((book: any) => {
+  const filteredBooks = allBooks.filter((book: Book) => {
     if (!query) return true;
-    const title = (book.title || "").toLowerCase();
+    const name = (book.name || "").toLowerCase();
     const author = (book.author || "").toLowerCase();
     const category = (book.category || "").toLowerCase();
-    return title.includes(query) || author.includes(query) || category.includes(query);
+    return name.includes(query) || author.includes(query) || category.includes(query);
   });
 
   return (
@@ -57,7 +57,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredBooks.map((book: any) => (
+          {filteredBooks.map((book: Book) => (
             <BookCard key={book.id} book={book} />
           ))}
         </div>

@@ -1,95 +1,105 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { BookDetailPageProps } from "@/app/types/tinylibrary";
-import { getBookById } from "../../lib/books";
-import Pill from "../../components/Pill";
+import { getBookById, getAllBooks } from "@/app/lib/books";
+import { Book } from "@/app/types/tinylibrary";
+import Image from "next/image";
 
-export default async function BookDetailPage({ params }: BookDetailPageProps) {
-  const { id } = await params;
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
 
-  let book;
+export default async function BookDetailPage({ params }: PageProps) {
   try {
-    book = await getBookById(id);
-  } catch (error) {
-    notFound();
-  }
+    const resolvedParams = await params;
+    const bookId = Number(resolvedParams.id);
+    const book: Book | undefined = await getBookById(bookId);
 
-  const isPlaceholder = !book.image || book.image.includes("place-hold.it");
-  const coverUrl = isPlaceholder
-    ? `https://picsum.photos/seed/book-${book.id}/600/800`
-    : book.image;
-
-  const formattedDate = new Date(book.dateAdded).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-8 py-4">
-      <Link
-        href="/books"
-        className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors w-fit"
-      >
-        ← Back to all books
-      </Link>
-
-      <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm grid grid-cols-1 md:grid-cols-12 gap-6 p-6 md:p-8">
-        <div className="md:col-span-5 aspect-[3/4] bg-stone-100 rounded-xl border border-stone-200/80 overflow-hidden relative shadow-inner flex items-center justify-center">
-          <img
-            src={coverUrl}
-            alt={book.name}
-            className="w-full h-full object-cover"
-          />
+    if (!book) {
+      return (
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-serif font-bold text-stone-900 mb-4">Book Not Found</h1>
+          <p className="text-stone-600 mb-8">The book you are looking for does not exist or has been removed.</p>
+          <Link
+            href="/books"
+            className="px-6 py-3 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-800 transition-colors"
+          >
+            Back to Library Catalog
+          </Link>
         </div>
+      );
+    }
 
-        <div className="md:col-span-7 flex flex-col justify-between gap-6">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-2">
-              <Pill className="bg-amber-50 text-amber-900 border-amber-200">
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <Link
+          href="/books"
+          className="inline-flex items-center text-sm font-medium text-stone-600 hover:text-stone-900 mb-8 transition-colors"
+        >
+          &larr; Back to Catalog
+        </Link>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 bg-white border border-stone-200 rounded-3xl p-8 shadow-sm">
+          <div className="relative aspect-[3/4] bg-stone-100 rounded-2xl overflow-hidden shadow-md">
+            {book.image ? (
+              <Image
+                src={book.image}
+                alt={book.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-stone-400 text-sm">
+                No Cover Available
+              </div>
+            )}
+          </div>
+
+          <div className="md:col-span-2 flex flex-col justify-between">
+            <div>
+              <span className="inline-block px-3 py-1 bg-stone-100 text-stone-800 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">
                 {book.category}
-              </Pill>
-              <span className="text-xs text-stone-500 font-medium flex items-center gap-1 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
-                ❤️ {book.likes} likes
               </span>
+              <h1 className="text-3xl font-serif font-bold text-stone-900 mb-2">{book.name}</h1>
+              <p className="text-lg text-stone-600 mb-6 font-medium">By {book.author}</p>
+              
+              <div className="border-t border-stone-100 pt-6">
+                <h3 className="text-sm font-semibold text-stone-900 uppercase tracking-wider mb-2">About this book</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">{book.description || "No description provided."}</p>
+              </div>
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight mt-1">
-              {book.name}
-            </h1>
-
-            <p className="text-lg font-medium text-stone-600">
-              By <span className="text-stone-800">{book.author}</span>
-            </p>
-          </div>
-
-          <div className="border-t border-b border-stone-100 py-4 flex flex-col gap-3 text-sm text-stone-600">
-            <div className="flex justify-between py-1">
-              <span className="text-stone-500">Catalog ID</span>
-              <span className="font-mono text-stone-800">#{book.id}</span>
+            <div className="mt-8 pt-6 border-t border-stone-100 flex items-center gap-4">
+              <Link
+                href={`/books/category/${encodeURIComponent(book.category)}`}
+                className="px-5 py-2.5 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-800 transition-colors"
+              >
+                More in {book.category}
+              </Link>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-stone-500">Date Added</span>
-              <span className="text-stone-800">{formattedDate}</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-stone-500">Availability</span>
-              <span className="text-emerald-700 font-medium">In Stock (Indie Pick)</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="font-serif font-semibold text-stone-900">
-              Why you might like this book
-            </h3>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              Hand-curated by our community librarians. If you enjoy thought-provoking{" "}
-              <span className="capitalize font-medium">{book.category}</span> titles with strong
-              character development and engaging narratives, <span className="italic">{book.name}</span> is a recommended addition to your reading list.
-            </p>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } catch (_error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+        <h1 className="text-2xl font-serif font-bold text-stone-900 mb-4">Something went wrong</h1>
+        <p className="text-stone-600 mb-8">Unable to load book details at this time.</p>
+        <Link
+          href="/books"
+          className="px-6 py-3 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-800 transition-colors"
+        >
+          Back to Library Catalog
+        </Link>
+      </div>
+    );
+  }
+}
+
+export async function generateStaticParams() {
+  const books: Book[] = await getAllBooks();
+  return books.map((book) => ({
+    id: String(book.id),
+  }));
 }
